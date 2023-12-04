@@ -29,6 +29,12 @@ pyenv local obris-cli
 pip install -r requirements.txt
 ```
 
+### Configure Executable
+
+```bash
+sudo chmod +x ./main.py
+```
+
 ### Entry Point
 
 Start running Obris commands locally!

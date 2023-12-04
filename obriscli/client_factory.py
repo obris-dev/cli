@@ -1,8 +1,9 @@
-from .clients.repos import RepoClient
+from .clients import RepoClient, ApplicationClient
 from .constants import CommandOption
 
 
 COMMAND_TO_CLIENT = {
+    CommandOption.APPLICATION: ApplicationClient,
     CommandOption.REPO: RepoClient
 }
 

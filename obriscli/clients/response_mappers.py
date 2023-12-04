@@ -2,6 +2,17 @@ import attrs
 
 
 @attrs.define
+class Application:
+    id: str
+    account_id: str
+    name: str
+    region: str
+    description: str
+    has_credentials: bool
+    created_at: str
+
+
+@attrs.define
 class Repo:
     id: str
     name: str
