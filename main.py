@@ -31,7 +31,7 @@ def cli(ctx, token, base_url):
 @cli.group()
 @click.pass_context
 def application(ctx):
-    ctx.obj = ctx.obj.create_client(CommandOption.APPLICATION)
+    ctx.obj = ctx.obj.create_client(CommandOption.CLOUD_APPLICATION)
 
 
 @application.command()
@@ -81,12 +81,26 @@ def update(application_client, id, name, description):
 
 @application.command()
 @click.option(
+    '--id',
+    help="An Obris id not yet linked to a cloud provider.",
+)
+@click.pass_obj
+def link(application_client, id):
+    if id is None:
+        unlinked_applications = application_client.are_unlinked()
+    else:
+        application_client.link(pk=id)
+    # logger.log_json({"application": _application})
+
+
+@application.command()
+@click.option(
     '--id', required=True,
     help="The ID of the application you want to delete.",
 )
 @click.pass_obj
 def delete(application_client, id):
-    application_client.delete(id=id)
+    application_client.delete(pk=id)
 
 
 # ------------------------------------------------------------------------------
