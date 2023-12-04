@@ -2,11 +2,15 @@ import webbrowser
 
 from enum import Enum
 from urllib.parse import urlencode
+from time import sleep
 
+from obriscli.logger import Logger
 from obriscli.utilities import make_id
 
 from ..users import UserClient
 from .application_client import ApplicationClient
+
+logger = Logger()
 
 
 class IntegrationDestinationURL(Enum):
@@ -47,7 +51,7 @@ class CloudApplicationClient(ApplicationClient):
         }
 
     def are_unlinked(self):
-        self.list(has_credentials=False)
+        return self.list(has_credentials=False)
 
     def link(self, pk=None):
         self.start_link(pk=pk)
@@ -69,4 +73,19 @@ class CloudApplicationClient(ApplicationClient):
         integration_destination = f"{destination_url}?{encoded_params}"
         webbrowser.open(integration_destination)
 
-        return 0
+    def poll_link(self, pk=None):
+        if pk is None:
+            raise ValueError("id is required.")
+
+        sleep_secs = 15
+        timeout = 60 * 15  # 15 minutes
+        while True:
+            application = self.get_one(pk=pk)
+            if application.has_credentials:
+                break
+            elif timeout <= 0:
+                logger.log(f"Timeout waiting for application link.\n", error=True)
+                break
+            logger.log(f"Application not yet linked. Checking again in {sleep_secs}s...\n")
+            sleep(sleep_secs)
+            timeout -= sleep_secs

@@ -2,6 +2,7 @@
 
 import click
 
+from time import sleep
 from obriscli import ClientFactory, CommandOption, Logger
 
 logger = Logger()
@@ -35,9 +36,13 @@ def application(ctx):
 
 
 @application.command()
+@click.option(
+    '--has-credentials', "-c", type=bool, default=None,
+    help="Filter application list to those linked or not to cloud provider.",
+)
 @click.pass_obj
-def list(application_client):
-    applications = application_client.list()
+def list(application_client, has_credentials):
+    applications = application_client.list(has_credentials=has_credentials)
     logger.log_json({"applications": applications})
 
 
@@ -81,16 +86,25 @@ def update(application_client, id, name, description):
 
 @application.command()
 @click.option(
-    '--id',
-    help="An Obris id not yet linked to a cloud provider.",
+    '--id', required=True,
+    help="Obris application id with has_credentials=False.",
 )
 @click.pass_obj
 def link(application_client, id):
-    if id is None:
-        unlinked_applications = application_client.are_unlinked()
-    else:
-        application_client.link(pk=id)
-    # logger.log_json({"application": _application})
+    target_id = id
+
+    target_application = application_client.get_one(pk=target_id)
+    if target_application.has_credentials:
+        logger.log("Application already linked. Exiting...\n")
+        return
+
+    logger.log(f"Linking application id={target_application.id} name={target_application.name}...  "
+               f"Redirecting to AWS to complete the process.\n")
+    sleep(1)
+
+    application_client.start_link(pk=target_application.id)
+    link_success = application_client.poll_link(pk=target_application.id)
+
 
 
 @application.command()
