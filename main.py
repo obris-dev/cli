@@ -105,12 +105,5 @@ def list(repo_client):
     logger.log_json({"repos": repos})
 
 
-@repo.command()
-@click.pass_obj
-def create(repo_client):
-    _repo = repo_client.create()
-    logger.log_json({"repo": _repo})
-
-
 if __name__ == "__main__":
     cli()
