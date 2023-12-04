@@ -1,9 +1,14 @@
-from .clients import RepoClient, ApplicationClient
+from .clients import (
+    ApplicationClient,
+    CloudApplicationClient,
+    RepoClient
+)
 from .constants import CommandOption
 
 
 COMMAND_TO_CLIENT = {
     CommandOption.APPLICATION: ApplicationClient,
+    CommandOption.CLOUD_APPLICATION: CloudApplicationClient,
     CommandOption.REPO: RepoClient
 }
 

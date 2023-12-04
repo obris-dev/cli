@@ -1,1 +1,2 @@
 from .application_client import ApplicationClient
+from .cloud_application_client import CloudApplicationClient

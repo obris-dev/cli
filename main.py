@@ -2,6 +2,7 @@
 
 import click
 
+from time import sleep
 from obriscli import ClientFactory, CommandOption, Logger
 
 logger = Logger()
@@ -31,13 +32,17 @@ def cli(ctx, token, base_url):
 @cli.group()
 @click.pass_context
 def application(ctx):
-    ctx.obj = ctx.obj.create_client(CommandOption.APPLICATION)
+    ctx.obj = ctx.obj.create_client(CommandOption.CLOUD_APPLICATION)
 
 
 @application.command()
+@click.option(
+    '--has-credentials', "-c", type=bool, default=None,
+    help="Filter application list to those linked or not to cloud provider.",
+)
 @click.pass_obj
-def list(application_client):
-    applications = application_client.list()
+def list(application_client, has_credentials):
+    applications = application_client.list(has_credentials=has_credentials)
     logger.log_json({"applications": applications})
 
 
@@ -47,7 +52,10 @@ def list(application_client):
     help="A helpful description outlining the your application's purpose.",
 )
 @click.option(
-    '--region', "-r", required=True,
+    '--region',
+    "-r",
+    type=click.Choice(['us-east-1', 'us-east-2', 'us-west-1', 'us-west-2']),
+    required=True,
     help="The region that hosts your application.",
 )
 @click.option(
@@ -82,11 +90,39 @@ def update(application_client, id, name, description):
 @application.command()
 @click.option(
     '--id', required=True,
+    help="Obris application id with has_credentials=False.",
+)
+@click.pass_obj
+def link(application_client, id):
+    target_id = id
+
+    target_application = application_client.get_one(pk=target_id)
+    if target_application.has_credentials:
+        logger.log("Application already linked. Exiting...\n")
+        return
+
+    logger.log(f"Linking application id={target_application.id} name={target_application.name}...  "
+               f"Redirecting to AWS to complete the process.\n")
+    sleep(1)
+
+    application_client.start_link(pk=target_application.id)
+
+    link_success = application_client.poll_link(pk=target_application.id)
+    if not link_success:
+        exit(1)
+
+
+
+
+
+@application.command()
+@click.option(
+    '--id', required=True,
     help="The ID of the application you want to delete.",
 )
 @click.pass_obj
 def delete(application_client, id):
-    application_client.delete(id=id)
+    application_client.delete(pk=id)
 
 
 # ------------------------------------------------------------------------------
