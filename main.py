@@ -52,7 +52,10 @@ def list(application_client, has_credentials):
     help="A helpful description outlining the your application's purpose.",
 )
 @click.option(
-    '--region', "-r", required=True,
+    '--region',
+    "-r",
+    type=click.Choice(['us-east-1', 'us-east-2', 'us-west-1', 'us-west-2']),
+    required=True,
     help="The region that hosts your application.",
 )
 @click.option(
@@ -103,7 +106,12 @@ def link(application_client, id):
     sleep(1)
 
     application_client.start_link(pk=target_application.id)
+
     link_success = application_client.poll_link(pk=target_application.id)
+    if not link_success:
+        exit(1)
+
+
 
 
 

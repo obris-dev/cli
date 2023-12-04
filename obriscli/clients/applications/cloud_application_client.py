@@ -82,10 +82,11 @@ class CloudApplicationClient(ApplicationClient):
         while True:
             application = self.get_one(pk=pk)
             if application.has_credentials:
-                break
+                logger.log(f"Application linked!\n")
+                return True
             elif timeout <= 0:
                 logger.log(f"Timeout waiting for application link.\n", error=True)
-                break
+                return False
             logger.log(f"Application not yet linked. Checking again in {sleep_secs}s...\n")
             sleep(sleep_secs)
             timeout -= sleep_secs
