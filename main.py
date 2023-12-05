@@ -210,9 +210,10 @@ def delete(repo_client, id):
 )
 @click.pass_obj
 def clear_credential(github_creds_client, id):
-    github_creds_client.clear_creds(
+    repo = github_creds_client.clear_credential(
         pk=id
     )
+    logger.log_json({"repo": repo})
 
 # ------------------------------------------------------------------------------
 # Credentials Command Group
