@@ -35,6 +35,22 @@ class GithubCredentialClient(BaseRESTClient):
         formatted_response = CredentialGithubResponseMapper.credential(credential)
         return formatted_response
 
+    def update(self, pk=None, username=None, token=None):
+        if pk is None:
+            raise ValueError("missing id")
+
+        data_params = {}
+        if username is not None:
+            data_params["username"] = username
+        if token is not None:
+            data_params["token"] = token
+
+        command_path = CredentialGithubPath.GITHUB.value.format(pk)
+        response_json = self.put(command_path, data=data_params)
+        credential = response_json["credential"]
+        formatted_response = CredentialGithubResponseMapper.credential(credential)
+        return formatted_response
+
     def delete(self, pk=None):
         if pk is None:
             raise ValueError("missing id")
