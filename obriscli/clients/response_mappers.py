@@ -42,3 +42,15 @@ class Account:
     credential_id: str
     created_at: str
     updated_at: str
+
+
+@attrs.define
+class CredentialGithub:
+    id: str
+    username: str
+    mask_token: str
+    user_id: str
+    account_id: str
+    application_id: str
+    updated_at: str
+    created_at: str
