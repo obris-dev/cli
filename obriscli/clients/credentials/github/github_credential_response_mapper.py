@@ -14,7 +14,6 @@ class CredentialGithubResponseMapper:
     @staticmethod
     def credential(response_json):
         unformatted_credential = response_json
-        print(unformatted_credential)
         return CredentialGithub(
             unformatted_credential["id"],
             unformatted_credential["username"],
