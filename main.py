@@ -203,6 +203,16 @@ def delete(repo_client, id):
         pk=id
     )
 
+@repo.command()
+@click.option(
+    '--id', required=True,
+    help="GitHub credential id.",
+)
+@click.pass_obj
+def clear_credential(github_creds_client, id):
+    github_creds_client.clear_creds(
+        pk=id
+    )
 
 # ------------------------------------------------------------------------------
 # Credentials Command Group
