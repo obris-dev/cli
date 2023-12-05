@@ -145,7 +145,7 @@ def list(repo_client, application_id):
 @repo.command()
 @click.option(
     '--credential-id', '-c',
-    help="Github credential id. run: `obris credential github list` to view options.",
+    help="GitHub credential id. run: `obris credential github list` to view options.",
 )
 @click.option(
     '--name', '-n', required=True,
@@ -170,7 +170,7 @@ def create(repo_client, application_id, url, name, credential_id):
 @repo.command()
 @click.option(
     '--credential-id', '-c',
-    help="Github credential id. run: `obris credential github list` to view options.",
+    help="GitHub credential id. run: `obris credential github list` to view options.",
 )
 @click.option(
     '--name', '-n',
@@ -214,7 +214,7 @@ def credential(ctx):
 
 
 # ------------------------------------------------------------------------------
-# Github Credential Commands
+# GitHub Credential Commands
 # ------------------------------------------------------------------------------
 @credential.group()
 @click.pass_context
@@ -241,11 +241,11 @@ def list(github_creds_client, application_id):
 @github.command()
 @click.option(
     '--token', '-t', prompt=True, hide_input=True,
-    help="Github personal access token (classic) associated with repo and workflow permissions.",
+    help="GitHub personal access token (classic) associated with repo and workflow permissions.",
 )
 @click.option(
     '--username', '-u', required=True,
-    help="Github username associated with the credentials.",
+    help="GitHub username associated with the credentials.",
 )
 @click.option(
     '--application-id', '-a', required=True,
@@ -261,8 +261,33 @@ def create(github_creds_client, application_id, username, token):
 
 @github.command()
 @click.option(
+    '--token', '-t', is_flag=True,
+    help="Update GitHub personal access token (classic) associated with repo and workflow permissions.",
+)
+@click.option(
+    '--username', '-u',
+    help="GitHub username associated with the credentials.",
+)
+@click.option(
     '--id', required=True,
-    help="Github credential id.",
+    help="GitHub credential id.",
+)
+@click.pass_obj
+def update(github_creds_client, id, username, token):
+    user_token = None
+    if token:
+        user_token = click.prompt('Enter new GitHub personal access token (classic)', type=str)
+
+    _credential = github_creds_client.update(
+        pk=id, username=username, token=user_token
+    )
+    logger.log_json({"credential": _credential})
+
+
+@github.command()
+@click.option(
+    '--id', required=True,
+    help="GitHub credential id.",
 )
 @click.pass_obj
 def delete(github_creds_client, id):
