@@ -90,6 +90,16 @@ def update(application_client, id, name, description):
 @application.command()
 @click.option(
     '--id', required=True,
+    help="The ID of the application you want to delete.",
+)
+@click.pass_obj
+def delete(application_client, id):
+    application_client.delete(pk=id)
+
+
+@application.command()
+@click.option(
+    '--id', required=True,
     help="Obris application id with has_credentials=False.",
 )
 @click.pass_obj
@@ -112,19 +122,6 @@ def link(application_client, id):
         exit(1)
 
 
-
-
-
-@application.command()
-@click.option(
-    '--id', required=True,
-    help="The ID of the application you want to delete.",
-)
-@click.pass_obj
-def delete(application_client, id):
-    application_client.delete(pk=id)
-
-
 # ------------------------------------------------------------------------------
 # Repository Commands
 # ------------------------------------------------------------------------------
@@ -135,9 +132,13 @@ def repo(ctx):
 
 
 @repo.command()
+@click.option(
+    '--application-id', '-a', required=True,
+    help="Obris application id associated with the repos.",
+)
 @click.pass_obj
-def list(repo_client):
-    repos = repo_client.list()
+def list(repo_client, application_id):
+    repos = repo_client.list(application_id=application_id)
     logger.log_json({"repos": repos})
 
 
