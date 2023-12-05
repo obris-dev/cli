@@ -62,3 +62,16 @@ class RepoClient(BaseRESTClient):
 
         formatted_path = RepoPath.REPO.value.format(pk)
         super().delete(formatted_path)
+
+    def clear_creds(self, pk=None):
+        if pk is None:
+            raise ValueError("missing id")
+
+        data_params = {
+            "credential_id": 0
+        }
+        formatted_path = RepoPath.REPO.value.format(pk)
+        response_json = self.put(formatted_path, data=data_params)
+        repo = response_json["repo"]
+        formatted_response = RepoResponseMapper.repo(repo)
+        return formatted_response
