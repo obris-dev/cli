@@ -63,7 +63,7 @@ class RepoClient(BaseRESTClient):
         formatted_path = RepoPath.REPO.value.format(pk)
         super().delete(formatted_path)
 
-    def clear_creds(self, pk=None):
+    def clear_credential(self, pk=None):
         if pk is None:
             raise ValueError("missing id")
 
