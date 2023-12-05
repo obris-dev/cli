@@ -9,7 +9,7 @@ class Logger:
     @classmethod
     def log_json(cls, message, error=False):
         dumped_msg = json.dumps(message, default=attrs.asdict, indent=4)
-        cls.log(dumped_msg, error=error)
+        cls.log(f"{dumped_msg}\n", error=error)
 
     @staticmethod
     def log(message, error=False):

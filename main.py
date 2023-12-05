@@ -79,7 +79,7 @@ def create(application_client, name, region, description):
 )
 @click.option(
     '--id', required=True,
-    help="The Obris application id.",
+    help="Obris application id.",
 )
 @click.pass_obj
 def update(application_client, id, name, description):
@@ -90,7 +90,17 @@ def update(application_client, id, name, description):
 @application.command()
 @click.option(
     '--id', required=True,
-    help="Obris application id with has_credentials=False.",
+    help="The ID of the application you want to delete.",
+)
+@click.pass_obj
+def delete(application_client, id):
+    application_client.delete(pk=id)
+
+
+@application.command()
+@click.option(
+    '--id', required=True,
+    help="Obris application id.",
 )
 @click.pass_obj
 def link(application_client, id):
@@ -112,19 +122,6 @@ def link(application_client, id):
         exit(1)
 
 
-
-
-
-@application.command()
-@click.option(
-    '--id', required=True,
-    help="The ID of the application you want to delete.",
-)
-@click.pass_obj
-def delete(application_client, id):
-    application_client.delete(pk=id)
-
-
 # ------------------------------------------------------------------------------
 # Repository Commands
 # ------------------------------------------------------------------------------
@@ -135,10 +132,143 @@ def repo(ctx):
 
 
 @repo.command()
+@click.option(
+    '--application-id', '-a', required=True,
+    help="Obris application id associated with the repos.",
+)
 @click.pass_obj
-def list(repo_client):
-    repos = repo_client.list()
+def list(repo_client, application_id):
+    repos = repo_client.list(application_id=application_id)
     logger.log_json({"repos": repos})
+
+
+@repo.command()
+@click.option(
+    '--credential-id', '-c',
+    help="Github credential id. run: `obris credential github list` to view options.",
+)
+@click.option(
+    '--name', '-n', required=True,
+    help="Internal Obris used name of the github repo.",
+)
+@click.option(
+    '--url', '-u', required=True,
+    help="HTTPS url for github repo.",
+)
+@click.option(
+    '--application-id', '-a', required=True,
+    help="Obris application id associated with the repos.",
+)
+@click.pass_obj
+def create(repo_client, application_id, url, name, credential_id):
+    repo = repo_client.create(
+        application_id=application_id, url=url, name=name, credential_id=credential_id
+    )
+    logger.log_json({"repo": repo})
+
+
+@repo.command()
+@click.option(
+    '--credential-id', '-c',
+    help="Github credential id. run: `obris credential github list` to view options.",
+)
+@click.option(
+    '--name', '-n',
+    help="Internal Obris used name of the github repo.",
+)
+@click.option(
+    '--url', '-u',
+    help="HTTPS url for github repo.",
+)
+@click.option(
+    '--id', required=True,
+    help="Id of Obris repo.",
+)
+@click.pass_obj
+def update(repo_client, id, url, name, credential_id):
+    repo = repo_client.update(
+        pk=id, url=url, name=name, credential_id=credential_id
+    )
+    logger.log_json({"repo": repo})
+
+
+@repo.command()
+@click.option(
+    '--id', required=True,
+    help="Obris repo id.",
+)
+@click.pass_obj
+def delete(repo_client, id):
+    repo_client.delete(
+        pk=id
+    )
+
+
+# ------------------------------------------------------------------------------
+# Credentials Command Group
+# ------------------------------------------------------------------------------
+@cli.group()
+@click.pass_context
+def credential(ctx):
+    pass
+
+
+# ------------------------------------------------------------------------------
+# Github Credential Commands
+# ------------------------------------------------------------------------------
+@credential.group()
+@click.pass_context
+def github(ctx):
+    ctx.obj = ctx.obj.create_client(CommandOption.CREDENTIAL_GITHUB)
+
+
+@github.command()
+@click.option(
+    '--application-id', '-a', required=True,
+    help="Obris application id associated with the repos.",
+)
+@click.pass_obj
+def list(github_creds_client, application_id):
+    credentials = github_creds_client.list(
+        application_id=application_id
+    )
+    convert_list = None
+    if credentials is not None:
+        convert_list = [credentials]
+    logger.log_json({"credentials": convert_list})
+
+
+@github.command()
+@click.option(
+    '--token', '-t', prompt=True, hide_input=True,
+    help="Github personal access token (classic) associated with repo and workflow permissions.",
+)
+@click.option(
+    '--username', '-u', required=True,
+    help="Github username associated with the credentials.",
+)
+@click.option(
+    '--application-id', '-a', required=True,
+    help="Obris application id associated with the repos.",
+)
+@click.pass_obj
+def create(github_creds_client, application_id, username, token):
+    _credential = github_creds_client.create(
+        application_id=application_id, username=username, token=token
+    )
+    logger.log_json({"credential": _credential})
+
+
+@github.command()
+@click.option(
+    '--id', required=True,
+    help="Github credential id.",
+)
+@click.pass_obj
+def delete(github_creds_client, id):
+    github_creds_client.delete(
+        pk=id
+    )
 
 
 if __name__ == "__main__":
