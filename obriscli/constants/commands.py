@@ -6,4 +6,5 @@ class CommandOption(Enum):
     CLOUD_APPLICATION = "cloud_application"
     CREDENTIAL = "credential"
     CREDENTIAL_GITHUB = "credential_github"
+    PROCESS = "process"
     REPO = "repo"

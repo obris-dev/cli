@@ -2,6 +2,7 @@ from .clients import (
     ApplicationClient,
     CloudApplicationClient,
     GithubCredentialClient,
+    ProcessClient,
     RepoClient
 )
 from .constants import CommandOption
@@ -11,6 +12,7 @@ COMMAND_TO_CLIENT = {
     CommandOption.APPLICATION: ApplicationClient,
     CommandOption.CLOUD_APPLICATION: CloudApplicationClient,
     CommandOption.CREDENTIAL_GITHUB: GithubCredentialClient,
+    CommandOption.PROCESS: ProcessClient,
     CommandOption.REPO: RepoClient
 }
 
