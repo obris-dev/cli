@@ -203,6 +203,7 @@ def delete(repo_client, id):
         pk=id
     )
 
+
 @repo.command()
 @click.option(
     '--id', required=True,
@@ -214,6 +215,7 @@ def clear_credential(github_creds_client, id):
         pk=id
     )
     logger.log_json({"repo": repo})
+
 
 # ------------------------------------------------------------------------------
 # Credentials Command Group
@@ -305,6 +307,195 @@ def delete(github_creds_client, id):
     github_creds_client.delete(
         pk=id
     )
+
+
+# ------------------------------------------------------------------------------
+# Processes Command Group
+# ------------------------------------------------------------------------------
+@cli.group()
+@click.pass_context
+def process(ctx):
+    ctx.obj = ctx.obj.create_client(CommandOption.PROCESS)
+
+
+@process.command()
+@click.option(
+    '--application-id', '-a', required=True,
+    help="Obris application id associated with the processes.",
+)
+@click.pass_obj
+def list(process_client, application_id):
+    processes = process_client.list(
+        application_id=application_id
+    )
+    logger.log_json({"processes": processes})
+
+
+@process.command()
+@click.option(
+    '--route-match', '-m',
+    help="If serving web traffic, comma seperated list of patterns that route traffic to the deployed server"
+         " (ex. \"*, /v1/*, /backend/*\").",
+)
+@click.option(
+    '--local-port', '-p',
+    help="If serving web traffic, the local port the deployed server runs on.",
+)
+@click.option(
+    '--procfile-path', '-s', required=True,
+    help="The path to the Procfile in the associated repo.",
+)
+@click.option(
+    '--requirements-path', '-d', required=True,
+    help="The path to the file containing the process' dependencies in the associated repo.",
+)
+@click.option(
+    '--runtime', '-t', required=True,
+    help="The runtime id for your process.",
+)
+@click.option(
+    '--repository-id', '-r', required=True,
+    help="Obris repository id to associate with the process.",
+)
+@click.option(
+    '--application-id', '-a', required=True,
+    help="Obris application id to associate with the process.",
+)
+@click.pass_obj
+def create(
+        process_client,
+        application_id,
+        repository_id,
+        runtime,
+        requirements_path,
+        procfile_path,
+        local_port,
+        route_match
+):
+    _process = process_client.create(
+        application_id=application_id,
+        repository_id=repository_id,
+        runtime=runtime,
+        requirements_path=requirements_path,
+        procfile_path=procfile_path,
+        local_port=local_port,
+        route_match=route_match
+    )
+    logger.log_json({"process": _process})
+
+
+@process.command()
+@click.option(
+    '--route-match', '-m',
+    help="If serving web traffic, comma seperated list of patterns that route traffic to the deployed server"
+         " (ex. \"*, /v1/*, /backend/*\").",
+)
+@click.option(
+    '--local-port', '-p',
+    help="If serving web traffic, the local port the deployed server runs on.",
+)
+@click.option(
+    '--procfile-path', '-s',
+    help="The path to the Procfile in the associated repo.",
+)
+@click.option(
+    '--requirements-path', '-d',
+    help="The path to the file containing the process' dependencies in the associated repo.",
+)
+@click.option(
+    '--runtime', '-t',
+    help="The runtime id for your process.",
+)
+@click.option(
+    '--repository-id', '-r',
+    help="Obris repository id to associate with the process.",
+)
+@click.option(
+    '--id', required=True,
+    help="Obris process id.",
+)
+@click.pass_obj
+def update(
+        process_client,
+        id,
+        repository_id,
+        runtime,
+        requirements_path,
+        procfile_path,
+        local_port,
+        route_match
+):
+    _process = process_client.update(
+        pk=id,
+        repository_id=repository_id,
+        runtime=runtime,
+        requirements_path=requirements_path,
+        procfile_path=procfile_path,
+        local_port=local_port,
+        route_match=route_match
+    )
+    logger.log_json({"process": _process})
+
+
+@process.command()
+@click.option(
+    '--id', required=True,
+    help="Obris process id.",
+)
+@click.pass_obj
+def clear_route_config(
+        process_client,
+        id
+):
+    _process = process_client.clear_route_config(
+        pk=id,
+    )
+    logger.log_json({"process": _process})
+
+@process.command()
+@click.option(
+    '--id', required=True,
+    help="Obris process id.",
+)
+@click.pass_obj
+def delete(
+        process_client,
+        id
+):
+    _process = process_client.delete(
+        pk=id
+    )
+
+
+@process.command()
+@click.option(
+    '--application-id', '-a', required=True,
+    help="Obris application id associated with the processes.",
+)
+@click.pass_obj
+def runtime_types(process_client, application_id):
+    _runtime_types = process_client.runtime_types(
+        application_id=application_id
+    )
+    logger.log_json({"runtime_types": _runtime_types})
+
+
+@process.command()
+@click.option(
+    '--runtime-type', '-t', required=True,
+    help="The type of runtimes to list.",
+)
+@click.option(
+    '--application-id', '-a', required=True,
+    help="Obris application id associated with the processes.",
+)
+@click.pass_obj
+def runtimes(process_client, application_id, runtime_type):
+    processes = process_client.runtimes(
+        application_id=application_id,
+        runtime_type=runtime_type
+    )
+    logger.log_json({"processes": processes})
 
 
 if __name__ == "__main__":

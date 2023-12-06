@@ -54,3 +54,32 @@ class CredentialGithub:
     application_id: str
     updated_at: str
     created_at: str
+
+
+@attrs.define
+class Process:
+    id: str
+    runtime_type: str
+    runtime: str
+    requirements_path: str
+    procfile_path: str
+    local_port: str
+    route_match: str
+    account_id: str
+    application_id: str
+    repository_id: str
+    updated: str
+    created: str
+
+
+@attrs.define
+class RuntimeType:
+    type: str
+    name: str
+
+
+@attrs.define
+class RuntimeVersion:
+    id: str
+    type: str
+    name: str
