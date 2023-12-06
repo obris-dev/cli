@@ -134,7 +134,7 @@ def repo(ctx):
 @repo.command()
 @click.option(
     '--application-id', '-a', required=True,
-    help="Obris application id associated with the repos.",
+    help="Obris application id.",
 )
 @click.pass_obj
 def list(repo_client, application_id):
@@ -157,7 +157,7 @@ def list(repo_client, application_id):
 )
 @click.option(
     '--application-id', '-a', required=True,
-    help="Obris application id associated with the repos.",
+    help="Obris application id.",
 )
 @click.pass_obj
 def create(repo_client, application_id, url, name, credential_id):
@@ -238,7 +238,7 @@ def github(ctx):
 @github.command()
 @click.option(
     '--application-id', '-a', required=True,
-    help="Obris application id associated with the repos.",
+    help="Obris application id.",
 )
 @click.pass_obj
 def list(github_creds_client, application_id):
@@ -254,7 +254,7 @@ def list(github_creds_client, application_id):
 @github.command()
 @click.option(
     '--token', '-t', prompt=True, hide_input=True,
-    help="GitHub personal access token (classic) associated with repo and workflow permissions.",
+    help="GitHub personal access token (classic) with repo and workflow permissions.",
 )
 @click.option(
     '--username', '-u', required=True,
@@ -262,7 +262,7 @@ def list(github_creds_client, application_id):
 )
 @click.option(
     '--application-id', '-a', required=True,
-    help="Obris application id associated with the repos.",
+    help="Obris application id.",
 )
 @click.pass_obj
 def create(github_creds_client, application_id, username, token):
@@ -275,7 +275,7 @@ def create(github_creds_client, application_id, username, token):
 @github.command()
 @click.option(
     '--token', '-t', is_flag=True,
-    help="Update GitHub personal access token (classic) associated with repo and workflow permissions.",
+    help="Update GitHub personal access token (classic) with repo and workflow permissions.",
 )
 @click.option(
     '--username', '-u',
@@ -321,7 +321,7 @@ def process(ctx):
 @process.command()
 @click.option(
     '--application-id', '-a', required=True,
-    help="Obris application id associated with the processes.",
+    help="Obris application id.",
 )
 @click.pass_obj
 def list(process_client, application_id):
@@ -470,7 +470,7 @@ def delete(
 @process.command()
 @click.option(
     '--application-id', '-a', required=True,
-    help="Obris application id associated with the processes.",
+    help="Obris application id.",
 )
 @click.pass_obj
 def runtime_types(process_client, application_id):
@@ -487,7 +487,7 @@ def runtime_types(process_client, application_id):
 )
 @click.option(
     '--application-id', '-a', required=True,
-    help="Obris application id associated with the processes.",
+    help="Obris application id.",
 )
 @click.pass_obj
 def runtimes(process_client, application_id, runtime_type):
@@ -496,6 +496,104 @@ def runtimes(process_client, application_id, runtime_type):
         runtime_type=runtime_type
     )
     logger.log_json({"processes": processes})
+
+# ------------------------------------------------------------------------------
+# Webserver Command Group
+# ------------------------------------------------------------------------------
+@cli.group()
+@click.pass_context
+def webserver(ctx):
+    ctx.obj = ctx.obj.create_client(CommandOption.WEBSERVER)
+
+
+@webserver.command()
+@click.option(
+    '--application-id', '-a', required=True,
+    help="Obris application id.",
+)
+@click.pass_obj
+def list(webserver_client, application_id):
+    webservers = webserver_client.list(
+        application_id=application_id
+    )
+    logger.log_json({"webservers": webservers})
+
+
+@webserver.command()
+@click.option(
+    '--post-process-init', '-c',
+    help="Executable pre cloud init script string."
+)
+@click.option(
+    '--pre-process-init', '-c',
+    help="Executable pre cloud init script string."
+)
+@click.option(
+    '--pre-cloud-init', '-c',
+    help="Executable pre cloud init script string.",
+)
+@click.option(
+    '--domain', '-d',
+    help="Owned domain name (ex. example.com) to associated with the webserver.",
+)
+@click.option(
+    '--availability-zones', '-z',
+    multiple=True, required=True,
+    help="AZs for instance.",
+)
+@click.option(
+    '--runtime', '-r', required=True,
+    help="Webserver runtime.",
+)
+@click.option(
+    '--keypair', '-k', required=True,
+    help="Keypair name.",
+)
+@click.option(
+    '--instance-type', '-i', required=True,
+    help="Cluster instance type.",
+)
+@click.option(
+    '--process-ids', '-p', multiple=True, required=True,
+    help="Obris process ids.",
+)
+@click.option(
+    '--name', '-n', required=True,
+    help="Webserver name.",
+)
+@click.option(
+    '--application-id', '-a', required=True,
+    help="Obris application id.",
+)
+@click.pass_obj
+def create(
+        webserver_client,
+        application_id,
+        name,
+        process_ids,
+        instance_type,
+        keypair,
+        runtime,
+        availability_zones,
+        domain,
+        pre_cloud_init,
+        pre_process_init,
+        post_process_init
+):
+    webserver = webserver_client.create(
+        application_id=application_id,
+        name=name,
+        process_ids=process_ids,
+        instance_type=instance_type,
+        keypair=keypair,
+        runtime=runtime,
+        availability_zones=availability_zones,
+        domain=domain,
+        pre_cloud_init_script=pre_cloud_init,
+        pre_process_init_script=pre_process_init,
+        post_process_init_script=post_process_init
+    )
+    logger.log_json({"webserver": webserver})
 
 
 if __name__ == "__main__":

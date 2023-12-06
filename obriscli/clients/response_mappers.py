@@ -83,3 +83,25 @@ class RuntimeVersion:
     id: str
     type: str
     name: str
+
+
+@attrs.define
+class Compute:
+    id: str
+    name: str
+    human_status: str
+    status: str
+    domain: str
+    has_tls: str
+    process_ids: str
+    instance_type: str
+    keypair: str
+    runtime: str
+    availability_zones: str
+    pre_cloud_init_script: str
+    build_script: str
+    post_build_script: str
+    account_id: str
+    application_id: str
+    updated: str
+    created: str

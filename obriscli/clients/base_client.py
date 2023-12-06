@@ -8,7 +8,9 @@ class BaseRESTClient:
         self.base_api_url = base_api_url
 
     def __generate_headers(self):
-        return {"Authorization": f"Bearer {self.access_token}"}
+        return {
+            "Authorization": f"Bearer {self.access_token}"
+        }
 
     def __generate_url(self, command_path):
         return f"{self.base_api_url}{command_path}"
@@ -17,21 +19,21 @@ class BaseRESTClient:
         return self.__make_request("get", command_path, params=params)
 
     def post(self, command_path, data):
-        return self.__make_request("post", command_path, data=data)
+        return self.__make_request("post", command_path, json=data)
 
     def put(self, command_path, data):
-        return self.__make_request("put", command_path, data=data)
+        return self.__make_request("put", command_path, json=data)
 
     def delete(self, command_path):
         return self.__make_request("delete", command_path)
 
-    def __make_request(self, http_method, command_path, data=None, params=None):
+    def __make_request(self, http_method, command_path, json=None, params=None):
         url = self.__generate_url(command_path)
         headers = self.__generate_headers()
 
         additional_kwargs = {}
-        if data is not None:
-            additional_kwargs["data"] = data
+        if json is not None:
+            additional_kwargs["json"] = json
         elif params is not None:
             additional_kwargs["params"] = params
 

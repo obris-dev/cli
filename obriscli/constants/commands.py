@@ -8,3 +8,4 @@ class CommandOption(Enum):
     CREDENTIAL_GITHUB = "credential_github"
     PROCESS = "process"
     REPO = "repo"
+    WEBSERVER = "webserver"
