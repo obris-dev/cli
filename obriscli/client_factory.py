@@ -1,19 +1,25 @@
 from .clients import (
     ApplicationClient,
     CloudApplicationClient,
+    EnvVarCredentialClient,
     GithubCredentialClient,
     ProcessClient,
-    RepoClient
+    RepoClient,
+    SSLTLSCertificateClient,
+    WebserverClient
 )
 from .constants import CommandOption
 
 
 COMMAND_TO_CLIENT = {
     CommandOption.APPLICATION: ApplicationClient,
+    CommandOption.CERTIFICATE: SSLTLSCertificateClient,
     CommandOption.CLOUD_APPLICATION: CloudApplicationClient,
     CommandOption.CREDENTIAL_GITHUB: GithubCredentialClient,
+    CommandOption.ENV_VAR: EnvVarCredentialClient,
     CommandOption.PROCESS: ProcessClient,
-    CommandOption.REPO: RepoClient
+    CommandOption.REPO: RepoClient,
+    CommandOption.WEBSERVER: WebserverClient
 }
 
 
