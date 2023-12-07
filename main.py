@@ -521,15 +521,15 @@ def list(webserver_client, application_id):
 
 @webserver.command()
 @click.option(
-    '--post-process-init', '-c',
+    '--post-build-script', '-l',
+    help="Executable post build script script string."
+)
+@click.option(
+    '--build-script', '-b',
     help="Executable pre cloud init script string."
 )
 @click.option(
-    '--pre-process-init', '-c',
-    help="Executable pre cloud init script string."
-)
-@click.option(
-    '--pre-cloud-init', '-c',
+    '--pre-cloud-init-script', '-f',
     help="Executable pre cloud init script string.",
 )
 @click.option(
@@ -576,11 +576,11 @@ def create(
         runtime,
         availability_zones,
         domain,
-        pre_cloud_init,
-        pre_process_init,
-        post_process_init
+        pre_cloud_init_script,
+        build_script,
+        post_build_script
 ):
-    webserver = webserver_client.create(
+    _webserver = webserver_client.create(
         application_id=application_id,
         name=name,
         process_ids=process_ids,
@@ -589,11 +589,101 @@ def create(
         runtime=runtime,
         availability_zones=availability_zones,
         domain=domain,
-        pre_cloud_init_script=pre_cloud_init,
-        pre_process_init_script=pre_process_init,
-        post_process_init_script=post_process_init
+        pre_cloud_init_script=pre_cloud_init_script,
+        pre_process_init_script=build_script,
+        post_cloud_init_script=post_build_script
     )
-    logger.log_json({"webserver": webserver})
+    logger.log_json({"webserver": _webserver})
+
+
+@webserver.command()
+@click.option(
+    '--application-id', '-a', required=True,
+    help="Obris application id.",
+)
+@click.pass_obj
+def list(webserver_client, application_id):
+    webservers = webserver_client.list(
+        application_id=application_id
+    )
+    logger.log_json({"webservers": webservers})
+
+
+@webserver.command()
+@click.option(
+    '--post-build-script', '-l',
+    help="Executable post build script script string."
+)
+@click.option(
+    '--build-script', '-b',
+    help="Executable build script string."
+)
+@click.option(
+    '--pre-cloud-init-script', '-f',
+    help="Executable pre cloud init script string.",
+)
+@click.option(
+    '--domain', '-d',
+    help="Owned domain name (ex. example.com) to associated with the webserver.",
+)
+@click.option(
+    '--availability-zones', '-z',
+    multiple=True, required=True,
+    help="AZs for instance.",
+)
+@click.option(
+    '--runtime', '-r',
+    help="Webserver runtime.",
+)
+@click.option(
+    '--keypair', '-k',
+    help="Keypair name.",
+)
+@click.option(
+    '--instance-type', '-i',
+    help="Cluster instance type.",
+)
+@click.option(
+    '--process-ids', '-p', multiple=True,
+    help="Obris process ids.",
+)
+@click.option(
+    '--name', '-n',
+    help="Webserver name.",
+)
+@click.option(
+    '--id',
+    help="Obris comput id.",
+)
+@click.pass_obj
+def update(
+        webserver_client,
+        id,
+        name,
+        process_ids,
+        instance_type,
+        keypair,
+        runtime,
+        availability_zones,
+        domain,
+        pre_cloud_init_script,
+        build_script,
+        post_build_script
+):
+    _webserver = webserver_client.update(
+        pk=id,
+        name=name,
+        process_ids=process_ids,
+        instance_type=instance_type,
+        keypair=keypair,
+        runtime=runtime,
+        availability_zones=availability_zones,
+        domain=domain,
+        pre_cloud_init_script=pre_cloud_init_script,
+        pre_process_init_script=build_script,
+        post_cloud_init_script=post_build_script
+    )
+    logger.log_json({"webserver": _webserver})
 
 
 @webserver.command()
@@ -605,6 +695,266 @@ def create(
 def delete(webserver_client, id):
      webserver_client.delete(
         pk=id
+    )
+
+
+@webserver.command()
+@click.option(
+    '--application-id', '-a', required=True,
+    help="Obris application id.",
+)
+@click.pass_obj
+def runtimes(webserver_client, application_id):
+    _runtimes = webserver_client.runtimes(
+        application_id=application_id
+    )
+    logger.log_json({"runtimes": _runtimes})
+
+
+@webserver.command()
+@click.option(
+    '--application-id', '-a', required=True,
+    help="Obris application id.",
+)
+@click.pass_obj
+def availability_zones(webserver_client, application_id):
+    _availability_zones = webserver_client.availability_zones(
+        application_id=application_id
+    )
+    logger.log_json({"availability_zones": _availability_zones})
+
+
+@webserver.command()
+@click.option(
+    '--application-id', '-a', required=True,
+    help="Obris application id.",
+)
+@click.pass_obj
+def key_pairs(webserver_client, application_id):
+    _key_pairs = webserver_client.key_pairs(
+        application_id=application_id
+    )
+    logger.log_json({"key_pairs": _key_pairs})
+
+
+@webserver.command()
+@click.option(
+    '--application-id', '-a', required=True,
+    help="Obris application id.",
+)
+@click.pass_obj
+def instance_types(webserver_client, application_id):
+    _instance_types = webserver_client.instance_types(
+        application_id=application_id
+    )
+    logger.log_json({"instance_types": _instance_types})
+
+
+# ------------------------------------------------------------------------------
+# Env var Command Group
+# ------------------------------------------------------------------------------
+@cli.group()
+@click.pass_context
+def env_var(ctx):
+    ctx.obj = ctx.obj.create_client(CommandOption.ENV_VAR)
+
+
+@env_var.command("list")
+@click.option(
+    '--application-id', '-a', required=True,
+    help="Obris application id.",
+)
+@click.pass_obj
+def list_(env_var_client, application_id):
+    env_vars = env_var_client.list(
+        application_id=application_id
+    )
+    logger.log_json({"env_vars": env_vars})
+
+
+@env_var.command()
+@click.option(
+    '--value', '-v', required=True,
+    help="Environment variable value.",
+)
+@click.option(
+    '--key', '-k', required=True,
+    help="Environment variable key.",
+)
+
+@click.option(
+    '--application-id', '-a', required=True,
+    help="Obris application id.",
+)
+@click.pass_obj
+def create(env_var_client, application_id, key, value):
+    _env_var = env_var_client.create(
+        application_id=application_id,
+        key=key,
+        value=value
+    )
+    logger.log_json({"env_var": _env_var})
+
+
+@env_var.command()
+@click.option(
+    '--value', '-v',
+    help="Environment variable value.",
+)
+@click.option(
+    '--key', '-k',
+    help="Environment variable key.",
+)
+@click.option(
+    '--application-id', '-a', required=True,
+    help="Obris application id.",
+)
+@click.option(
+    '--id', required=True,
+    help="Obris environment variable id.",
+)
+@click.pass_obj
+def update(env_var_client, id, application_id, key, value):
+    _env_var = env_var_client.update(
+        pk=id,
+        application_id=application_id,
+        key=key,
+        value=value
+    )
+    logger.log_json({"env_var": _env_var})
+
+
+@env_var.command()
+@click.option(
+    '--application-id', '-a', required=True,
+    help="Obris application id.",
+)
+@click.option(
+    '--id', required=True,
+    help="Obris environment variable id.",
+)
+@click.pass_obj
+def delete(env_var_client, id, application_id):
+    env_var_client.delete(
+        pk=id,
+        application_id=application_id
+    )
+
+
+# ------------------------------------------------------------------------------
+# SSL/TLS Certificate Command Group
+# ------------------------------------------------------------------------------
+@cli.group()
+@click.pass_context
+def certificate(ctx):
+    ctx.obj = ctx.obj.create_client(CommandOption.CERTIFICATE)
+
+
+@certificate.command("list")
+@click.option(
+    '--application-id', '-a', required=True,
+    help="Obris application id.",
+)
+@click.pass_obj
+def list_(certificate_client, application_id):
+    certificates = certificate_client.list(
+        application_id=application_id
+    )
+    logger.log_json({"certificates": certificates})
+
+
+@certificate.command("import")
+@click.option(
+    '--cert-chain-path', '-c',
+    help="Local path to chain.pem file.",
+)
+@click.option(
+    '--cert-private-key-path', '-p', required=True,
+    help="Local path to privkey.pem file.",
+)
+@click.option(
+    '--cert-body-path', '-b', required=True,
+    help="Local path to cert.pem file.",
+)
+@click.option(
+    '--application-id', '-a', required=True,
+    help="Obris application id.",
+)
+@click.pass_obj
+def import_(
+        certificate_client,
+        application_id,
+        cert_body_path,
+        cert_private_key_path,
+        cert_chain_path
+):
+    _certificate = certificate_client.create(
+        application_id=application_id,
+        cert_body_file_path=cert_body_path,
+        cert_private_key_file_path=cert_private_key_path,
+        cert_chain_file_path=cert_chain_path
+    )
+    logger.log_json({"certificate": _certificate})
+
+
+@certificate.command()
+@click.option(
+    '--cert-chain-path', '-c',
+    help="Local path to chain.pem file.",
+)
+@click.option(
+    '--cert-private-key-path', '-p', required=True,
+    help="Local path to privkey.pem file.",
+)
+@click.option(
+    '--cert-body-path', '-b', required=True,
+    help="Local path to cert.pem file.",
+)
+@click.option(
+    '--application-id', '-a', required=True,
+    help="Obris application id.",
+)
+@click.option(
+    '--id',  required=True,
+    help="Obris SSL/TLS certificate id.",
+)
+@click.pass_obj
+def reimport(
+        certificate_client,
+        id,
+        application_id,
+        cert_body_path,
+        cert_private_key_path,
+        cert_chain_path
+):
+    _certificate = certificate_client.update(
+        pk=id,
+        application_id=application_id,
+        cert_body_file_path=cert_body_path,
+        cert_private_key_file_path=cert_private_key_path,
+        cert_chain_file_path=cert_chain_path
+    )
+    logger.log_json({"certificate": _certificate})
+
+
+@certificate.command()
+@click.option(
+    '--id', required=True,
+    help="Obris SSL/TLS certificate id.",
+)
+@click.option(
+    '--application-id', '-a', required=True,
+    help="Obris application id.",
+)
+@click.pass_obj
+def delete(
+        certificate_client,
+        application_id,
+        id
+):
+    _certificate = certificate_client.delete(
+        application_id=application_id,
+        pk=id,
     )
 
 

@@ -105,3 +105,50 @@ class Compute:
     application_id: str
     updated: str
     created: str
+
+
+@attrs.define
+class Runtime:
+    id: str
+    name: str
+
+
+@attrs.define
+class AvailabilityZone:
+    id: str
+    name: str
+
+
+@attrs.define
+class KeyPair:
+    id: str
+    name: str
+
+
+@attrs.define
+class InstanceType:
+    id: str
+    name: str
+
+
+@attrs.define
+class EnvironmentVariable:
+    id: str
+    application_id: str
+    key: str
+    value: str
+    updated: str
+    created: str
+
+
+@attrs.define
+class SSLTLSCertficate:
+    id: str
+    common_name: str
+    domains: list[str]
+    signature_algorithm: str
+    serial_number: str
+    not_before: str
+    not_after: str
+    updated: str
+    created: str
