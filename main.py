@@ -596,5 +596,17 @@ def create(
     logger.log_json({"webserver": webserver})
 
 
+@webserver.command()
+@click.option(
+    '--id', required=True,
+    help="Obris compute id.",
+)
+@click.pass_obj
+def delete(webserver_client, id):
+     webserver_client.delete(
+        pk=id
+    )
+
+
 if __name__ == "__main__":
     cli()

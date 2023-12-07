@@ -79,3 +79,13 @@ class WebserverClient(BaseRESTClient):
         webserver = response_json["webserver"]
         formatted_response = WebserverResponseMapper.webserver(webserver)
         return formatted_response
+
+    def delete(
+            self,
+            pk=None
+    ):
+        if pk is None:
+            raise ValueError("missing id")
+
+        command_path = WebserverPath.COMPUTE_TMPL.value.format(pk)
+        super().delete(command_path)
