@@ -32,7 +32,7 @@ pip install -r requirements.txt
 ### Configure Executable
 
 ```bash
-sudo chmod +x ./main.py
+sudo chmod +x ./__main__.py
 ```
 
 ### Entry Point
@@ -40,7 +40,7 @@ sudo chmod +x ./main.py
 Start running Obris commands locally!
 
 ```bash
-./main.py <command>
+./__main__.py <command>
 ```
 
 ## Contributing
