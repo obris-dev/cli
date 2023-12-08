@@ -15,6 +15,21 @@ This project aims to make managing your infrastructure independent from the clou
 to be able to leverage the tools they need and not have to make compromises when choosing between a scoped, managed 
 PaaS offering or a customizable, terse IaaS offering.
 
+## Installing
+
+```bash
+pip install obris
+```
+
+## Using
+* `obris application`
+* `obris certificate`
+* `obris credential`
+* `obris env-var`
+* `obris process`
+* `obris repo`
+* `obris webserver`
+
 ## Developing
 
 ### Install Dependencies
