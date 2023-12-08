@@ -7,13 +7,14 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "obris"
 version = "0.1.0"
+requires-python = ">=3.7"
 description = "Obris CLI for managing infrastructure independent of your cloud provider."
 readme = "README.md"
 authors = [{ name = "Obris", email = "josh@obris.io" }]
 dependencies = [
     "click >= 8.1.7",
     "attrs >= 23.1.0",
-    "requests >= 2.31.0"
+    "requests >= 2.5.4.1"
 ]
 
 [tool.setuptools.packages.find]
