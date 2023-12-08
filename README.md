@@ -11,8 +11,6 @@ Use our [quickstart guide](https://www.obris.io/docs/quickstart) to start buildi
 
 ## Overview
 
-This repo is in an Alpha release. 
-
 This project aims to make managing your infrastructure independent from the cloud it's deployed on.  We want developers 
 to be able to leverage the tools they need and not have to make compromises when choosing between a scoped, managed 
 PaaS offering or a customizable, terse IaaS offering.
