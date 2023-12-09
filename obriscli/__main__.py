@@ -49,22 +49,33 @@ def list(application_client, has_credentials):
 @application.command()
 @click.option(
     '--description', "-d", default="",
-    help="A helpful description outlining the your application's purpose.",
+    help="A helpful description outlining your application's purpose.",
 )
 @click.option(
     '--region',
     "-r",
-    type=click.Choice(['us-east-1', 'us-east-2', 'us-west-1', 'us-west-2']),
     required=True,
-    help="The region that hosts your application.",
+    help="The cloud provider specific region that hosts your application.",
+)
+@click.option(
+    '--provider',
+    "-p",
+    type=click.Choice(['aws', 'azure', 'gcp']),
+    required=True,
+    help="The cloud provider that hosts your application.",
 )
 @click.option(
     '--name', "-n", required=True,
     help="Name of your application.",
 )
 @click.pass_obj
-def create(application_client, name, region, description):
-    _application = application_client.create(name=name, region=region, description=description)
+def create(application_client, name, provider, region, description):
+    _application = application_client.create(
+        name=name,
+        provider=provider,
+        region=region,
+        description=description
+    )
     logger.log_json({"application": _application})
 
 
@@ -120,6 +131,20 @@ def link(application_client, id):
     link_success = application_client.poll_link(pk=target_application.id)
     if not link_success:
         exit(1)
+
+
+@application.command()
+@click.option(
+    '--provider',
+    "-p",
+    type=click.Choice(['aws', 'azure', 'gcp']),
+    required=True,
+    help="The cloud provider that hosts your application.",
+)
+@click.pass_obj
+def regions(application_client, provider):
+    _regions = application_client.regions(provider)
+    logger.log_json({"regions": _regions})
 
 
 # ------------------------------------------------------------------------------

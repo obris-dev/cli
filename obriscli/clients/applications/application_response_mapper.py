@@ -18,6 +18,7 @@ class ApplicationResponseMapper:
             unformatted_resp["id"],
             unformatted_resp["accountId"],
             unformatted_resp["name"],
+            unformatted_resp["humanType"],
             unformatted_resp["region"],
             unformatted_resp["description"],
             unformatted_resp["hasCredentials"],

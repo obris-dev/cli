@@ -6,6 +6,7 @@ class Application:
     id: str
     account_id: str
     name: str
+    provider: str
     region: str
     description: str
     has_credentials: bool
