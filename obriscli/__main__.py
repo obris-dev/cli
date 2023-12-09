@@ -9,6 +9,7 @@ logger = Logger()
 
 
 @click.group()
+@click.version_option(package_name="obris")
 @click.option(
     '--token',
     envvar='OBRIS_TOKEN',
