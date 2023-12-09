@@ -22,6 +22,12 @@ pip install obris
 ```
 
 ## Using
+
+### Setup
+1. Create an API token within your [Obris account](https://obris.io/credentials)
+1. Add `export OBRIS_TOKEN=<YOUR-GENERATED-TOKEN>` to your `~/.zshrc` or `~/.bashrc` file
+
+### Commands
 * `obris application`
 * `obris certificate`
 * `obris credential`
@@ -44,16 +50,12 @@ pip install -r requirements.txt
 
 ### Configure Executable
 
-```bash
-sudo chmod +x ./obriscli/__main__.py
-```
-
 ### Entry Point
 
 Start running Obris commands locally!
 
 ```bash
-./obriscli/__main__.py <command>
+python -m obriscli <command>
 ```
 
 ## Contributing
