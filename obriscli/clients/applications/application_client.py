@@ -16,7 +16,6 @@ class ApplicationClient(BaseRESTClient):
 
     @staticmethod
     def __map_provider_type(provider_slug):
-        import ipdb; ipdb.set_trace()
         return ApplicationType[provider_slug.upper()].value
 
     def list(self, has_credentials=None):
