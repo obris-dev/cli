@@ -22,8 +22,8 @@ class Repo:
     account_id: str
     application_id: str
     credential_id: str
-    created_at: str
     updated_at: str
+    created_at: str
 
 
 @attrs.define
@@ -69,8 +69,8 @@ class Process:
     account_id: str
     application_id: str
     repository_id: str
-    updated: str
-    created: str
+    updated_at: str
+    created_at: str
 
 
 @attrs.define
@@ -104,8 +104,8 @@ class Compute:
     post_build_script: str
     account_id: str
     application_id: str
-    updated: str
-    created: str
+    updated_at: str
+    created_at: str
 
 
 @attrs.define
@@ -138,8 +138,8 @@ class EnvironmentVariable:
     application_id: str
     key: str
     value: str
-    updated: str
-    created: str
+    updated_at: str
+    created_at: str
 
 
 @attrs.define
@@ -151,5 +151,5 @@ class SSLTLSCertficate:
     serial_number: str
     not_before: str
     not_after: str
-    updated: str
-    created: str
+    updated_at: str
+    created_at: str
