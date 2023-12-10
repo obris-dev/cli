@@ -6,11 +6,13 @@ class Application:
     id: str
     account_id: str
     name: str
-    provider: str
+    provider: int
+    human_provider: str
     region: str
     description: str
     has_credentials: bool
     created_at: str
+    updated_at: str
 
 
 @attrs.define

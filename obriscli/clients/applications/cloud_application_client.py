@@ -7,8 +7,14 @@ from time import sleep
 from obriscli.logger import Logger
 from obriscli.utilities import make_id
 
-from ..users import UserClient
+from ..notify import NotifyClient
 from .application_client import ApplicationClient
+from .exceptions import (
+    ApplicationAlreadyLinkedError,
+    ProviderNotReleasedError
+)
+
+from ..users import UserClient
 
 logger = Logger()
 
@@ -26,12 +32,19 @@ class CloudApplicationClient(ApplicationClient):
     def __init__(self, access_token, base_api_url):
         super().__init__(access_token, base_api_url)
         self.__user_client = None
+        self.__notify_client = None
 
     @property
     def user_client(self):
         if self.__user_client is None:
             self.__user_client = UserClient(self.access_token, self.base_api_url)
         return self.__user_client
+
+    @property
+    def notify_client(self):
+        if self.__notify_client is None:
+            self.__notify_client = NotifyClient(self.access_token, self.base_api_url)
+        return self.__notify_client
 
     @staticmethod
     def __generate_cloud_name():
@@ -62,7 +75,18 @@ class CloudApplicationClient(ApplicationClient):
 
         application = self.get_one(pk=pk)
         if application.has_credentials:
-            raise ValueError(f"Application already linked: id={pk}")
+            raise ApplicationAlreadyLinkedError(f"Application already linked: id={pk}")
+
+        if application.provider in (1, 2,):
+            raise ProviderNotReleasedError(
+                f"{application.human_provider} is still being implemented!",
+                application.provider,
+                application.human_provider
+            )
+
+        logger.log(f"Linking application id={application.id} name={application.name}...  "
+                   f"Redirecting to {application.human_provider} to complete the process.\n")
+        sleep(1)
 
         user = self.user_client.self()
 
@@ -90,3 +114,9 @@ class CloudApplicationClient(ApplicationClient):
             logger.log(f"Application not yet linked. Checking again in {sleep_secs}s...\n")
             sleep(sleep_secs)
             timeout -= sleep_secs
+
+    def notify_on_link_release(self, provider=None):
+        if provider is None:
+            raise ValueError("missing provider")
+
+        self.notify_client.create(kind="new_link", provider=provider)

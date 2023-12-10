@@ -2,8 +2,16 @@
 
 import click
 
-from time import sleep
-from obriscli import ClientFactory, CommandOption, Logger
+
+from obriscli import (
+    CommandOption,
+    ClientFactory,
+    Logger
+)
+from .execeptions import (
+    ApplicationAlreadyLinkedError,
+    ProviderNotReleasedError
+)
 
 logger = Logger()
 
@@ -118,18 +126,25 @@ def delete(application_client, id):
 def link(application_client, id):
     target_id = id
 
-    target_application = application_client.get_one(pk=target_id)
-    if target_application.has_credentials:
-        logger.log("Application already linked. Exiting...\n")
-        return
+    try:
+        application_client.start_link(pk=target_id)
+    except ApplicationAlreadyLinkedError:
+        exit(0)
+    except ProviderNotReleasedError as ex:
+        logger.log(f"Oops, you found us before we're ready! We're hard at work finishing \n"
+                   f"our integration with {ex.unimplemented_human_provider}! In the meantime, please feel free \n"
+                   f"to configure an AWS application.\n\n")
+        if click.confirm(
+                f"Would you like to be informed when we release our "
+                f"{ex.unimplemented_human_provider} link?"
+        ):
+            application_client.notify_on_link_release(provider=ex.unimplemented_provider)
+            logger.log("We'll reach out as soon as we've completed the finishing touches!\n")
+        else:
+            logger.log("No problem! We won't send a notification. Please check back soon!\n")
+        exit(0)
 
-    logger.log(f"Linking application id={target_application.id} name={target_application.name}...  "
-               f"Redirecting to AWS to complete the process.\n")
-    sleep(1)
-
-    application_client.start_link(pk=target_application.id)
-
-    link_success = application_client.poll_link(pk=target_application.id)
+    link_success = application_client.poll_link(pk=target_id)
     if not link_success:
         exit(1)
 
